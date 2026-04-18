@@ -59,27 +59,6 @@
                 @endauth
             </div>
 
-            <!-- Demo Credentials -->
-            <div class="mt-10 pt-8 border-t border-[#F0F0F0]">
-                <h3 class="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-4">Demo Access Credentials</h3>
-                <div class="space-y-3">
-                    <div class="p-3 bg-gray-50 border border-gray-100 rounded-[2px] flex items-center justify-between">
-                        <div class="text-[11px]">
-                            <span class="font-bold text-[#0F6CBD] uppercase block mb-0.5">Administrator</span>
-                            <span class="text-gray-500">admin@example.com</span>
-                        </div>
-                        <span class="text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded shadow-sm text-gray-400 font-mono">password</span>
-                    </div>
-                    <div class="p-3 bg-gray-50 border border-gray-100 rounded-[2px] flex items-center justify-between">
-                        <div class="text-[11px]">
-                            <span class="font-bold text-[#242424] uppercase block mb-0.5">Director</span>
-                            <span class="text-gray-500">director@example.com</span>
-                        </div>
-                        <span class="text-[10px] bg-white border border-gray-200 px-2 py-0.5 rounded shadow-sm text-gray-400 font-mono">password</span>
-                    </div>
-                </div>
-            </div>
-
             <!-- Footer -->
             <div class="mt-8 text-right">
                 <p class="text-[10px] text-gray-400 flex items-center justify-end">
