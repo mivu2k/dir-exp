@@ -20,6 +20,7 @@ return new class extends Migration
             $header->integer('period_year');
             $header->text('notes')->nullable();
             $header->string('status')->default('draft');
+            $header->timestamp('submitted_at')->nullable();
             $header->foreignId('reviewer_id')->nullable()->constrained('users')->onDelete('set null');
             $header->timestamp('reviewed_at')->nullable();
             $header->integer('version')->default(1);

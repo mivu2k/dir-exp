@@ -21,6 +21,7 @@ class ExpenseReport extends Model
         'notes',
         'status',
         'version',
+        'submitted_at',
         'reviewed_by',
         'reviewed_at',
         'rejection_reason',

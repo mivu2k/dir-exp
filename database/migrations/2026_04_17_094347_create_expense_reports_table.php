@@ -20,6 +20,7 @@ return new class extends Migration
             $table->year('period_year');
             $table->text('notes')->nullable();
             $table->enum('status', ['draft', 'submitted', 'approved', 'rejected'])->default('draft');
+            $table->timestamp('submitted_at')->nullable();
             $table->integer('version')->default(1);
             $table->foreignId('reviewed_by')->nullable()->constrained('users');
             $table->timestamp('reviewed_at')->nullable();

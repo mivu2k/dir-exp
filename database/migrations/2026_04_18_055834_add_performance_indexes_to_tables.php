@@ -32,6 +32,7 @@ return new class extends Migration
         // Income Reports — same
         Schema::table('income_reports', function (Blueprint $table) {
             $table->index(['director_id', 'status'], 'ir_director_status_idx');
+            $table->index('submitted_at', 'ir_submitted_at_idx');
         });
     }
 
@@ -52,6 +53,7 @@ return new class extends Migration
         });
         Schema::table('income_reports', function (Blueprint $table) {
             $table->dropIndex('ir_director_status_idx');
+            $table->dropIndex('ir_submitted_at_idx');
         });
     }
 };

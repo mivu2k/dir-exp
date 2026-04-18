@@ -91,6 +91,7 @@ class IncomeReportController extends Controller
                 'period_year' => $request->period_year,
                 'notes' => $request->notes,
                 'status' => $request->has('submit_report') ? 'submitted' : 'draft',
+                'submitted_at' => $request->has('submit_report') ? now() : null,
             ]);
 
             foreach ($request->lines as $line) {
@@ -201,6 +202,7 @@ class IncomeReportController extends Controller
                 'period_year' => $request->period_year,
                 'notes' => $request->notes,
                 'status' => $request->has('submit_report') ? 'submitted' : 'draft',
+                'submitted_at' => $request->has('submit_report') ? now() : $incomeReport->submitted_at,
             ]);
 
             $incomeReport->lines()->delete();

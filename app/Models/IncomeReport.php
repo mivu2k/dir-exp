@@ -16,6 +16,7 @@ class IncomeReport extends Model
         'period_year',
         'notes',
         'status',
+        'submitted_at',
         'reviewer_id',
         'reviewed_at',
         'version'

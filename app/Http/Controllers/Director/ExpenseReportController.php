@@ -121,6 +121,7 @@ class ExpenseReportController extends Controller
                 'period_year' => $request->period_year,
                 'notes' => $request->notes,
                 'status' => $request->has('submit_report') ? 'submitted' : 'draft',
+                'submitted_at' => $request->has('submit_report') ? now() : null,
                 'version' => 1,
             ]);
 
@@ -276,6 +277,7 @@ class ExpenseReportController extends Controller
                 'period_year' => $request->period_year,
                 'notes' => $request->notes,
                 'status' => $request->has('submit_report') ? 'submitted' : 'draft',
+                'submitted_at' => $request->has('submit_report') ? now() : $expenseReport->submitted_at,
             ]);
 
             $expenseReport->lines()->delete();
