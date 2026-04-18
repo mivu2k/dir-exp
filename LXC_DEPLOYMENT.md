@@ -1,12 +1,12 @@
-# DIR-EXPENSE: Final Deployment Guide (LXC & Production)
+# DIR-EXPENSE: Final Deployment Guide (LXC & MySQL Production)
 
-This guide provides a comprehensive roadmap for deploying **DIR-EXPENSE** in a production-grade Linux Container (LXC).
+This guide provides a comprehensive roadmap for deploying **DIR-EXPENSE** in a production-grade Linux Container (LXC) using **MySQL** (or MariaDB).
 
 ## 1. System Requirements & Stack
 - **OS**: Ubuntu 22.04+ (Recommended)
-- **PHP**: 8.4 (with sqlite3, fpm, gd, zip, bcmath, intl)
+- **PHP**: 8.4 (with mysql, fpm, gd, zip, bcmath, intl)
+- **Database**: MySQL 8.0+ or MariaDB 10.11+
 - **Web Server**: Nginx
-- **Database**: SQLite 3
 
 ## 2. Server Provisioning
 
@@ -22,14 +22,35 @@ sudo apt update
 
 # Install Essential Stack
 sudo apt install -y nginx php8.4-fpm php8.4-cli php8.4-mbstring php8.4-xml php8.4-curl \
-    php8.4-sqlite3 php8.4-gd php8.4-zip php8.4-bcmath php8.4-intl nodejs npm
+    php8.4-mysql php8.4-gd php8.4-zip php8.4-bcmath php8.4-intl nodejs npm mysql-server
 
 # Install Composer
 curl -sS https://getcomposer.org/installer | php
 sudo mv composer.phar /usr/local/bin/composer
 ```
 
-## 3. Deployment Steps
+## 3. Database Selection (MySQL/MariaDB)
+
+Configure your production database:
+
+```bash
+# Secure MySQL installation (follow prompts)
+sudo mysql_secure_installation
+
+# Create Database and User
+sudo mysql -u root -p
+```
+
+**Inside the MySQL shell:**
+```sql
+CREATE DATABASE dir_expense CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
+CREATE USER 'dir_user'@'localhost' IDENTIFIED BY 'YOUR_SECURE_PASSWORD';
+GRANT ALL PRIVILEGES ON dir_expense.* TO 'dir_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
+
+## 4. Application Setup
 
 Clone the repository and initialize the project components:
 
@@ -47,31 +68,30 @@ composer install --no-dev --optimize-autoloader
 npm install && npm run build
 ```
 
-## 4. Environment Stabilization
+## 5. Environment Configuration
 
 ```bash
 cp .env.example .env
 nano .env
 ```
 
-**Mandatory Adjustments:**
+**Mandatory MySQL Adjustments:**
 ```env
 APP_ENV=production
 APP_DEBUG=false
 APP_URL=http://your-app-domain.com
 
-DB_CONNECTION=sqlite
-# The database file must exist at /var/www/dir-exp/database/database.sqlite
+DB_CONNECTION=mysql
+DB_HOST=127.0.0.1
+DB_PORT=3306
+DB_DATABASE=dir_expense
+DB_USERNAME=dir_user
+DB_PASSWORD=YOUR_SECURE_PASSWORD
 ```
 
-**Initialize Database & Assets:**
+**Initialize Application:**
 ```bash
-# Create and secure the database
-touch database/database.sqlite
-sudo chown www-data:www-data database/database.sqlite
-sudo chmod 664 database/database.sqlite
-
-# Migration & Seeding
+# Security & Migrations
 php artisan key:generate
 php artisan migrate --force
 php artisan db:seed --force
@@ -80,7 +100,7 @@ php artisan db:seed --force
 php artisan storage:link
 ```
 
-## 5. Nginx & FPM Configuration
+## 6. Nginx & FPM Configuration
 
 `sudo nano /etc/nginx/sites-available/dir-expense`
 
@@ -122,21 +142,16 @@ sudo ln -s /etc/nginx/sites-available/dir-expense /etc/nginx/sites-enabled/
 sudo nginx -t && sudo systemctl restart nginx
 ```
 
-## 6. Maintenance & Automation
+## 7. Maintenance & Automation
 
 > [!TIP]
-> **Scheduler (Crontab)**: Ensure Laravel's background tasks run correctly (e.g., for automated reporting or cleanups).
+> **Scheduler (Crontab)**: Ensure Laravel's background tasks run correctly.
 > Add this line to `crontab -e`:
 > `* * * * * cd /var/www/dir-exp && php artisan schedule:run >> /dev/null 2>&1`
 
 > [!IMPORTANT]
-> **SQLite Backup**: Since SQLite is a file-based database, backups are simple but critical. 
-> Create a daily cron to copy `database/database.sqlite` to a secure off-container location.
-
-## 7. Troubleshooting LXC Permissions
-
-If you encounter "Permission Denied" errors in an **Unprivileged LXC Container**, ensure the `www-data` user (ID 33) has recursive ownership of the web root:
-`sudo chown -R 33:33 /var/www/dir-exp`
+> **MySQL Backups**: Set up a daily `mysqldump` cron job to ensure data safety.
+> Example: `mysqldump -u dir_user -p'PASSWORD' dir_expense > /path/to/backups/db_backup.sql`
 
 ## 8. Final Optimization
 ```bash
